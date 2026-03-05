@@ -1,0 +1,22 @@
+{
+  "world_name": "工业围城",
+  "description": "工业革命时期的一座灰暗工厂城镇。你是万千工人中的一个，每天在流水线上挣扎求存。老板高高在上，工头狐假虎威，工友们各怀心思。在这里，活着本身就是一种胜利。",
+  "max_days": 15,
+  "initial_character": {
+    "name": "无名者",
+    "health": 100,
+    "hunger": 100,
+    "money": 50,
+    "reputation": 10
+  },
+  "daily_costs": {
+    "hunger": 15,
+    "money": 5
+  },
+  "victory_condition": "存活到第 15 天",
+  "phases": [
+    {"day_range": [1, 4], "name": "适应期", "description": "你刚来到这座工厂城镇，一切都还陌生。"},
+    {"day_range": [5, 9], "name": "动荡期", "description": "工厂的矛盾开始激化，暗流涌动。"},
+    {"day_range": [10, 15], "name": "危机期", "description": "大裁员的风声传来，每个人都岌岌可危。"}
+  ]
+}

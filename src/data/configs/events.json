@@ -1,0 +1,230 @@
+[
+  {
+    "id": "evt_factory_overtime",
+    "title": "工厂加班",
+    "description": "工头走到你面前：「今晚加班，工资翻倍。但看你脸色不太好……」",
+    "conditions": {"min_day": 1},
+    "choices": [
+      {
+        "text": "接受加班，多挣一些",
+        "effect": {"money": 20, "health": -10, "hunger": -10},
+        "result": "你咬牙干到深夜，拿到了额外的工资，但身体疲惫不堪。"
+      },
+      {
+        "text": "拒绝，回去休息",
+        "effect": {"health": 5, "reputation": -5},
+        "result": "你拒绝了工头，回去好好休息了一晚。工头似乎记住了你。"
+      }
+    ]
+  },
+  {
+    "id": "evt_street_beggar",
+    "title": "街头乞丐",
+    "description": "回住处的路上，一个衣衫褴褛的老人向你伸出手：「行行好，给口吃的吧……」",
+    "conditions": {"min_day": 1},
+    "choices": [
+      {
+        "text": "分给他一些食物",
+        "effect": {"hunger": -10, "reputation": 10},
+        "result": "老人感激涕零，连声道谢。周围的人对你投来赞许的目光。"
+      },
+      {
+        "text": "假装没看见，快步走过",
+        "effect": {"reputation": -3},
+        "result": "你低着头走过，心里有些不是滋味。"
+      },
+      {
+        "text": "给他几个铜板",
+        "effect": {"money": -5, "reputation": 5},
+        "result": "老人颤巍巍地接过铜板，祝你好人一生平安。"
+      }
+    ]
+  },
+  {
+    "id": "evt_boss_inspection",
+    "title": "老板巡视",
+    "description": "今天老板亲自来工厂巡视，所有人都紧张起来。老板走到你面前，上下打量了你一眼。",
+    "conditions": {"min_day": 3},
+    "choices": [
+      {
+        "text": "主动汇报近期工作成果",
+        "effect": {"reputation": 15, "hunger": -5},
+        "result": "老板微微点头：「不错，是个能干的。」你感到压力很大，但也有些自豪。"
+      },
+      {
+        "text": "低头干活，不引起注意",
+        "effect": {},
+        "result": "老板从你身边走过，没有多看你一眼。平安无事。"
+      },
+      {
+        "text": "趁机提出改善伙食的建议",
+        "effect": {"reputation": -10, "hunger": 10},
+        "result": "老板皱了皱眉，但晚饭确实多了一道菜。不过你感觉工头看你的眼神变了。"
+      }
+    ]
+  },
+  {
+    "id": "evt_gambling",
+    "title": "地下赌局",
+    "description": "工友偷偷拉你到后巷：「今晚有赌局，来不来？赢了翻倍，输了……你懂的。」",
+    "conditions": {"min_day": 2},
+    "choices": [
+      {
+        "text": "赌一把，搏个翻身",
+        "effect": {"money": 30, "reputation": -5},
+        "result": "手气不错！你赢了一笔，但赌局的组织者记住了你的脸。"
+      },
+      {
+        "text": "算了，太冒险了",
+        "effect": {},
+        "result": "你摇摇头走开了。工友嘀咕了一句「胆小鬼」，但你心里踏实。"
+      }
+    ]
+  },
+  {
+    "id": "evt_food_shortage",
+    "title": "食物短缺",
+    "description": "这周工厂食堂的供给明显减少了。午饭只有稀粥和咸菜，工人们怨声载道。",
+    "conditions": {"min_day": 4},
+    "choices": [
+      {
+        "text": "忍着，省下钱来",
+        "effect": {"hunger": -20, "money": 5},
+        "result": "你饿得前胸贴后背，但至少多省下了几个铜板。"
+      },
+      {
+        "text": "花钱去外面买吃的",
+        "effect": {"money": -15, "hunger": 15},
+        "result": "你溜出去买了些面饼，总算填饱了肚子。"
+      },
+      {
+        "text": "联合工友向工头抗议",
+        "effect": {"reputation": 10, "health": -5},
+        "result": "工头勉强答应改善伙食，但你被记上了「刺头」的名单。"
+      }
+    ]
+  },
+  {
+    "id": "evt_sick_worker",
+    "title": "工友生病",
+    "description": "跟你关系最好的工友老张病倒了，躺在床上直冒冷汗。他需要药，但药铺的药很贵。",
+    "conditions": {"min_day": 3},
+    "choices": [
+      {
+        "text": "掏钱帮他买药",
+        "effect": {"money": -20, "reputation": 15},
+        "result": "老张吃了药后慢慢好转，感激地握住你的手：「这份恩情我记着。」"
+      },
+      {
+        "text": "陪他去找厂医碰碰运气",
+        "effect": {"reputation": 5, "hunger": -5},
+        "result": "厂医勉强给了些廉价草药，虽然效果不好，但聊胜于无。"
+      },
+      {
+        "text": "爱莫能助，自己也快撑不住了",
+        "effect": {"reputation": -10},
+        "result": "你转身离开，听见老张在身后剧烈咳嗽。你心里很不好受。"
+      }
+    ]
+  },
+  {
+    "id": "evt_promotion",
+    "title": "晋升机会",
+    "description": "工头找到你：「有个小组长的位置空出来了，我看你还行。不过……得意思意思。」",
+    "conditions": {"min_day": 5, "min_reputation": 20},
+    "choices": [
+      {
+        "text": "交钱打点，争取晋升",
+        "effect": {"money": -30, "reputation": 20},
+        "result": "你成了小组长，工资涨了，但欠下了一笔人情债。"
+      },
+      {
+        "text": "凭实力说话，不走后门",
+        "effect": {"reputation": 5},
+        "result": "工头冷哼一声走了。这次机会可能没了，但你问心无愧。"
+      }
+    ]
+  },
+  {
+    "id": "evt_theft",
+    "title": "仓库失窃",
+    "description": "工厂仓库昨晚被偷了一批原料，工头怀疑是内部人干的，开始逐一盘问。轮到你了。",
+    "conditions": {"min_day": 4},
+    "choices": [
+      {
+        "text": "如实说：昨晚你看到有人鬼鬼祟祟的",
+        "effect": {"reputation": 10, "health": -5},
+        "result": "工头记下了你的线索。但当晚你的工具箱被人踢翻了——有人记恨上你了。"
+      },
+      {
+        "text": "什么都没看到，不想惹事",
+        "effect": {},
+        "result": "工头不满地挥挥手让你走了。这件事暂时跟你没关系。"
+      }
+    ]
+  },
+  {
+    "id": "evt_market_day",
+    "title": "集市日",
+    "description": "今天是镇上的集市日，工厂难得放了半天假。集市上人来人往，叫卖声此起彼伏。",
+    "conditions": {"min_day": 2},
+    "choices": [
+      {
+        "text": "买些食物囤着",
+        "effect": {"money": -10, "hunger": 25},
+        "result": "你买了面饼和腌肉，够吃好几天了。"
+      },
+      {
+        "text": "逛逛，跟人打听消息",
+        "effect": {"reputation": 5},
+        "result": "你听到了不少关于工厂和镇子的消息，对这个地方的了解加深了。"
+      },
+      {
+        "text": "找个角落休息",
+        "effect": {"health": 10},
+        "result": "你找了棵大树，靠着树干睡了一觉，精神恢复了不少。"
+      }
+    ]
+  },
+  {
+    "id": "evt_accident",
+    "title": "工伤事故",
+    "description": "机器突然发出刺耳的声响，一块零件飞了出来！你本能地闪躲——",
+    "conditions": {"min_day": 3},
+    "choices": [
+      {
+        "text": "奋力躲开",
+        "effect": {"health": -15, "hunger": -10},
+        "result": "你勉强躲过了要害，但手臂被擦伤，流了不少血。工头只是让你自己包扎。"
+      },
+      {
+        "text": "拉住旁边的工友一起躲",
+        "effect": {"health": -10, "reputation": 15},
+        "result": "你拽着身旁的小李一起扑倒在地，两人都只受了轻伤。小李对你感激不已。"
+      }
+    ]
+  },
+  {
+    "id": "evt_final_crisis",
+    "title": "最终审判",
+    "description": "老板宣布工厂要裁员三成。工头拿着名单走过来，所有人都屏住了呼吸……",
+    "conditions": {"min_day": 8},
+    "choices": [
+      {
+        "text": "据理力争，展示自己的价值",
+        "effect": {"reputation": 10, "hunger": -10},
+        "result": "你列举了自己的贡献，工头犹豫了一下，把你的名字从名单上划掉了。"
+      },
+      {
+        "text": "联合其他工友集体抗议",
+        "effect": {"reputation": 20, "health": -15},
+        "result": "你们的抗议引发了骚动，老板被迫减少裁员人数，但你被重点「关注」了。"
+      },
+      {
+        "text": "默默收拾东西准备走",
+        "effect": {"money": 10, "reputation": -10},
+        "result": "你领了最后一笔工资，走出了工厂大门。天很冷，路很长。"
+      }
+    ]
+  }
+]

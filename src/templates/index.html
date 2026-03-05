@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoWorld - 工业围城</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    color: #c8c8d0;
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    image-rendering: pixelated;
+  }
+
+  /* ========== 标题画面 ========== */
+  #title-screen {
+    text-align: center;
+    animation: fadeIn 1.5s ease;
+    z-index: 100;
+  }
+
+  #title-screen h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 2.4em;
+    color: #d4a853;
+    text-shadow: 4px 4px 0 #2a1a00, 0 0 40px rgba(212,168,83,0.3);
+    margin-bottom: 8px;
+    letter-spacing: 4px;
+  }
+
+  #title-screen .subtitle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.7em;
+    color: #7a7a8a;
+    margin-bottom: 32px;
+    letter-spacing: 2px;
+  }
+
+  #title-screen .lore {
+    color: #5a5a6a;
+    font-size: 0.95em;
+    line-height: 2;
+    margin-bottom: 36px;
+    max-width: 500px;
+  }
+
+  #title-screen input {
+    background: #14141e;
+    border: 2px solid #2a2a3a;
+    color: #c8c8d0;
+    padding: 12px 20px;
+    font-size: 1em;
+    width: 280px;
+    text-align: center;
+    outline: none;
+    font-family: inherit;
+    image-rendering: auto;
+  }
+
+  #title-screen input:focus { border-color: #d4a853; }
+  #title-screen input::placeholder { color: #4a4a5a; }
+
+  .pixel-btn {
+    background: #1a1a2e;
+    border: 2px solid #d4a853;
+    color: #d4a853;
+    padding: 12px 40px;
+    font-size: 1em;
+    cursor: pointer;
+    font-family: 'Press Start 2P', monospace;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+    display: inline-block;
+    margin-top: 20px;
+    text-transform: uppercase;
+  }
+
+  .pixel-btn:hover {
+    background: #d4a853;
+    color: #0a0a0f;
+    box-shadow: 0 0 20px rgba(212,168,83,0.4);
+  }
+
+  /* ========== Canvas 容器 ========== */
+  #canvas-wrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  #game-canvas {
+    border: 2px solid #1e1e2e;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  /* ========== HUD ========== */
+  #pixel-hud {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    gap: 16px;
+    background: rgba(10,10,15,0.92);
+    border-bottom: 2px solid #1e1e2e;
+    padding: 8px 24px;
+    z-index: 50;
+    align-items: center;
+    font-size: 0.85em;
+  }
+
+  .hud-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hud-icon { font-size: 1.1em; }
+  .hud-label { color: #6a6a7a; font-size: 0.8em; }
+
+  .hud-val {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.75em;
+    color: #e0e0e0;
+    min-width: 28px;
+    text-align: right;
+  }
+
+  .hud-bar {
+    width: 60px;
+    height: 8px;
+    background: #1a1a2a;
+    border: 1px solid #2a2a3a;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hud-bar-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+  }
+
+  .bar-good { background: #58b86b; }
+  .bar-warning { background: #f0a030; }
+  .bar-danger { background: #e04040; }
+
+  /* ========== 阶段栏 ========== */
+  #pixel-phase {
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    background: rgba(10,10,15,0.85);
+    border: 1px solid #2a2a3a;
+    padding: 4px 16px;
+    font-size: 0.75em;
+    color: #d4a853;
+    z-index: 50;
+    white-space: nowrap;
+  }
+
+  /* ========== 底部提示 ========== */
+  #pixel-tip {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    background: rgba(10,10,15,0.85);
+    border: 1px solid #2a2a3a;
+    padding: 6px 20px;
+    font-size: 0.75em;
+    color: #5a5a6a;
+    z-index: 50;
+    white-space: nowrap;
+    font-family: monospace;
+    letter-spacing: 1px;
+  }
+
+  /* ========== 对话框覆盖层 ========== */
+  #dialogue-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  #dialogue-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  #dialogue-box {
+    background: #12121c;
+    border: 2px solid #d4a853;
+    max-width: 560px;
+    width: 90%;
+    padding: 24px;
+    box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 20px rgba(212,168,83,0.1);
+    animation: dlgIn 0.2s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  @keyframes dlgIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .dlg-header {
+    font-size: 1.2em;
+    color: #d4a853;
+    margin-bottom: 12px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .dlg-event-title { color: #c0a060; }
+  .dlg-victory { color: #d4a853; font-size: 1.4em; }
+  .dlg-defeat { color: #e04040; font-size: 1.4em; }
+
+  .dlg-text {
+    color: #b8b8c0;
+    line-height: 1.9;
+    margin-bottom: 16px;
+    font-size: 0.95em;
+  }
+
+  .dlg-ending-text {
+    font-size: 1.05em;
+    line-height: 2.2;
+    text-align: center;
+    padding: 12px 0;
+  }
+
+  .dlg-phase-desc {
+    color: #7a7a8a;
+    font-size: 0.85em;
+    margin-bottom: 12px;
+    text-align: center;
+    font-style: italic;
+  }
+
+  .dlg-logs {
+    margin-bottom: 16px;
+  }
+
+  .dlg-log-line {
+    color: #8a8a9a;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+    line-height: 1.6;
+  }
+
+  .dlg-event-divider {
+    height: 1px;
+    background: #2a2a3a;
+    margin: 16px 0;
+  }
+
+  .dlg-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .dlg-choice {
+    display: block;
+    width: 100%;
+    background: #14141e;
+    border: 1px solid #2a2a3a;
+    color: #c8c8d0;
+    padding: 12px 16px;
+    font-size: 0.9em;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    line-height: 1.6;
+    transition: all 0.15s;
+  }
+
+  .dlg-choice:hover {
+    border-color: #d4a853;
+    background: #1a1a28;
+    color: #d4a853;
+  }
+
+  .dlg-result-text {
+    color: #d4a853;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .dlg-effect {
+    font-size: 0.8em;
+    color: #7a9aba;
+    margin: 2px 0;
+  }
+
+  .dlg-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .dlg-btn {
+    background: #1a1a2e;
+    border: 2px solid #d4a853;
+    color: #d4a853;
+    padding: 10px 28px;
+    font-size: 0.9em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .dlg-btn:hover {
+    background: #d4a853;
+    color: #0a0a0f;
+  }
+
+  .dlg-btn-cancel {
+    border-color: #4a4a5a;
+    color: #6a6a7a;
+  }
+
+  .dlg-btn-cancel:hover {
+    background: #4a4a5a;
+    color: #e0e0e0;
+  }
+
+  .dlg-btn-restart {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.8em;
+    letter-spacing: 1px;
+  }
+
+  .dlg-textarea {
+    width: 100%;
+    background: #14141e;
+    border: 1px solid #2a2a3a;
+    color: #c8c8d0;
+    padding: 12px;
+    font-size: 0.9em;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .dlg-textarea:focus { border-color: #d4a853; }
+  .dlg-textarea::placeholder { color: #4a4a5a; }
+
+  /* ========== NPC 聊天对话框 ========== */
+  .chat-log {
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .chat-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+  }
+
+  .chat-npc { align-self: flex-start; }
+  .chat-player { align-self: flex-end; }
+
+  .chat-name {
+    font-size: 0.7em;
+    margin-bottom: 3px;
+    padding: 0 4px;
+  }
+
+  .chat-name-npc { color: #d4a853; }
+  .chat-name-player { color: #6a9aba; text-align: right; }
+
+  .chat-bubble {
+    padding: 8px 14px;
+    font-size: 0.9em;
+    line-height: 1.7;
+    word-break: break-word;
+  }
+
+  .chat-bubble-npc {
+    background: #1a1a2e;
+    border: 1px solid #2a2a3a;
+    border-radius: 2px 10px 10px 10px;
+    color: #c8c8d0;
+  }
+
+  .chat-bubble-player {
+    background: #1a2a3e;
+    border: 1px solid #2a3a5a;
+    border-radius: 10px 2px 10px 10px;
+    color: #b8d0e8;
+  }
+
+  .chat-typing {
+    color: #6a6a7a;
+    font-size: 1.2em;
+    letter-spacing: 4px;
+  }
+
+  .typing-dot {
+    animation: typingBlink 1s infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typingBlink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .chat-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: #14141e;
+    border: 1px solid #2a2a3a;
+    color: #c8c8d0;
+    padding: 10px 14px;
+    font-size: 0.9em;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .chat-input:focus { border-color: #d4a853; }
+  .chat-input::placeholder { color: #4a4a5a; }
+  .chat-input:disabled { opacity: 0.5; }
+
+  .chat-send-btn {
+    padding: 10px 18px !important;
+    font-size: 0.85em !important;
+    white-space: nowrap;
+  }
+
+  .chat-send-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .chat-hint {
+    text-align: center;
+    font-size: 0.7em;
+    color: #4a4a5a;
+    margin-top: 8px;
+  }
+
+  /* ========== 对话模式标签 ========== */
+  .chat-mode-tag {
+    display: inline-block;
+    font-size: 0.55em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-left: 10px;
+    vertical-align: middle;
+    font-weight: normal;
+    letter-spacing: 1px;
+  }
+
+  .chat-mode-scripted {
+    background: rgba(212, 168, 83, 0.15);
+    border: 1px solid rgba(212, 168, 83, 0.4);
+    color: #d4a853;
+  }
+
+  .chat-mode-free {
+    background: rgba(106, 138, 186, 0.15);
+    border: 1px solid rgba(106, 138, 186, 0.4);
+    color: #6a8aba;
+  }
+
+  /* ========== 对话系统消息（好感度/效果） ========== */
+  .chat-system-msg {
+    align-self: center;
+    max-width: 90%;
+    padding: 6px 14px;
+    background: rgba(30, 30, 46, 0.7);
+    border: 1px solid #2a2a3a;
+    border-radius: 6px;
+    animation: fadeInSystem 0.4s ease;
+  }
+
+  @keyframes fadeInSystem {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .chat-rel-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8em;
+  }
+
+  .chat-rel-icon { font-size: 1.1em; }
+
+  .chat-rel-level {
+    font-weight: bold;
+    min-width: 36px;
+  }
+
+  .chat-rel-value {
+    color: #8a8a9a;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.65em;
+    min-width: 30px;
+    text-align: right;
+  }
+
+  .chat-rel-meter {
+    flex: 1;
+    height: 6px;
+    background: #14141e;
+    border: 1px solid #2a2a3a;
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 60px;
+  }
+
+  .chat-rel-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease, background 0.5s ease;
+  }
+
+  .chat-sentiment {
+    font-size: 0.7em;
+    color: #6a6a7a;
+    margin-top: 4px;
+    text-align: center;
+    font-style: italic;
+  }
+
+  .chat-effects {
+    background: rgba(20, 30, 40, 0.7);
+    border-color: #2a3a4a;
+  }
+
+  .chat-effect-line {
+    font-size: 0.78em;
+    color: #7a9aba;
+    line-height: 1.6;
+  }
+
+  .chat-milestone {
+    color: #d4a853;
+    font-weight: bold;
+    font-size: 0.85em;
+    padding: 2px 0;
+    animation: milestoneGlow 1s ease;
+  }
+
+  @keyframes milestoneGlow {
+    0% { text-shadow: 0 0 8px rgba(212, 168, 83, 0.8); }
+    100% { text-shadow: none; }
+  }
+
+  /* ========== 滚动条 ========== */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #0a0a0f; }
+  ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 2px; }
+
+  /* ========== 动画 ========== */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ========== 扫描线效果（可选） ========== */
+  #canvas-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      transparent 0px,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<!-- 标题画面 -->
+<div id="title-screen">
+  <h1>工 业 围 城</h1>
+  <p class="subtitle">NEOWORLD</p>
+  <p class="lore">
+    工业革命时期的一座灰暗城镇。<br>
+    你是万千工人中的一个。<br>
+    活着，就是胜利。
+  </p>
+  <div>
+    <input type="text" id="input-name" placeholder="输入你的名字（可留空）" maxlength="20" autocomplete="off">
+  </div>
+  <button class="pixel-btn" id="btn-start">进 入 围 城</button>
+</div>
+
+<!-- 游戏画布 -->
+<div id="canvas-wrapper"></div>
+
+<!-- PixiJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.6.6/pixi.min.js"></script>
+
+<!-- 游戏模块 -->
+<script src="/static/js/sprites.js"></script>
+<script src="/static/js/tilemap.js"></script>
+<script src="/static/js/camera.js"></script>
+<script src="/static/js/player.js"></script>
+<script src="/static/js/npc.js"></script>
+<script src="/static/js/dialogue.js"></script>
+<script src="/static/js/hud.js"></script>
+<script src="/static/js/game.js"></script>
+
+</body>
+</html>

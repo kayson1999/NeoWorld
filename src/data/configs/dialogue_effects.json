@@ -1,0 +1,123 @@
+{
+  "_comment": "对话影响模型配置 —— 插件化，可自由修改规则而无需改代码",
+
+  "relationship": {
+    "_comment": "好感度/关系系统",
+    "min": -100,
+    "max": 100,
+    "initial_value": 0,
+    "levels": [
+      { "name": "敌视",   "range": [-100, -50], "color": "#e04040", "icon": "💢" },
+      { "name": "厌恶",   "range": [-49,  -20], "color": "#d07040", "icon": "😠" },
+      { "name": "冷淡",   "range": [-19,    0], "color": "#8a8a9a", "icon": "😐" },
+      { "name": "认识",   "range": [  1,   20], "color": "#a0a0b0", "icon": "🤝" },
+      { "name": "友善",   "range": [ 21,   50], "color": "#60b060", "icon": "😊" },
+      { "name": "信任",   "range": [ 51,   80], "color": "#50a0d0", "icon": "💙" },
+      { "name": "挚友",   "range": [ 81,  100], "color": "#d4a853", "icon": "⭐" }
+    ]
+  },
+
+  "npc_mood": {
+    "_comment": "NPC 情绪系统，影响 NPC 当次对话的态度",
+    "values": ["愤怒", "烦躁", "平静", "愉快", "感动"],
+    "default": "平静"
+  },
+
+  "sentiment_rules": {
+    "_comment": "对话情感分析 → 好感度变化映射（LLM 判断 sentiment 后查表）",
+    "very_positive": { "relationship_delta": [5, 12], "description": "对方非常高兴" },
+    "positive":      { "relationship_delta": [2, 6],  "description": "对方觉得不错" },
+    "neutral":       { "relationship_delta": [-1, 1], "description": "对方没什么反应" },
+    "negative":      { "relationship_delta": [-6, -2], "description": "对方有些不悦" },
+    "very_negative": { "relationship_delta": [-12, -5], "description": "对方非常生气" }
+  },
+
+  "player_effect_rules": {
+    "_comment": "对话内容可能对玩家属性产生的影响类型",
+    "allowed_attributes": ["health", "hunger", "money", "reputation"],
+    "max_per_dialogue": {
+      "health": [-10, 10],
+      "hunger": [-10, 15],
+      "money": [-20, 20],
+      "reputation": [-5, 10]
+    }
+  },
+
+  "relationship_thresholds": {
+    "_comment": "好感度达到特定值时触发的特殊效果",
+    "milestones": [
+      {
+        "npc_id": "foreman",
+        "threshold": 30,
+        "direction": "up",
+        "once": true,
+        "effect": { "money": 10 },
+        "message": "赵铁柱对你刮目相看，偷偷多算了你一笔工钱。"
+      },
+      {
+        "npc_id": "foreman",
+        "threshold": 60,
+        "direction": "up",
+        "once": true,
+        "effect": { "reputation": 10 },
+        "message": "赵铁柱在老板面前为你说了好话，你的声望大增。"
+      },
+      {
+        "npc_id": "zhang",
+        "threshold": 25,
+        "direction": "up",
+        "once": true,
+        "effect": { "hunger": 15 },
+        "message": "老张把自己的午饭分了一半给你。"
+      },
+      {
+        "npc_id": "zhang",
+        "threshold": 50,
+        "direction": "up",
+        "once": true,
+        "effect": { "health": 10, "hunger": 10 },
+        "message": "老张把珍藏的草药给了你，说是留着治病的，你比他更需要。"
+      },
+      {
+        "npc_id": "beggar",
+        "threshold": 20,
+        "direction": "up",
+        "once": true,
+        "effect": { "reputation": 5 },
+        "message": "老乞丐开始逢人便说你是个好人，你的名声在街头传开了。"
+      },
+      {
+        "npc_id": "beggar",
+        "threshold": 50,
+        "direction": "up",
+        "once": true,
+        "effect": { "money": 30 },
+        "message": "老乞丐突然塞给你一个布包，里面是他藏了多年的积蓄。「拿去……比我有用。」"
+      },
+      {
+        "npc_id": "foreman",
+        "threshold": -30,
+        "direction": "down",
+        "once": true,
+        "effect": { "money": -15, "reputation": -5 },
+        "message": "赵铁柱扣了你的工钱，还在工人面前数落你。"
+      },
+      {
+        "npc_id": "zhang",
+        "threshold": -20,
+        "direction": "down",
+        "once": true,
+        "effect": {},
+        "message": "老张看到你就叹气摇头，默默走开了。"
+      }
+    ]
+  },
+
+  "daily_relationship_decay": {
+    "_comment": "每天好感度的自然衰减（不互动则缓慢回归中性）",
+    "enabled": true,
+    "decay_rate": 1,
+    "decay_towards": 0,
+    "min_abs_to_decay": 5
+  }
+}
