@@ -76,7 +76,7 @@ cd NeoWorld
 | Phase 4 | 体验增强 — 2D 渲染、音频、动画、UI 精细化 | 2-3 月 |
 | Phase 5 | 扩展打磨 — 插件系统、性能优化、社区工具 | 持续 |
 
-详细计划见 [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)。
+详细计划见 [docs/plan1.0.md](docs/plan1.0.md)。
 
 ## 协同开发
 
